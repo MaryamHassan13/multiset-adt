@@ -1,10 +1,11 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class Tree {
     // TODO complete this Tree class to replicate the implementation from the Tree class in adts.py
-    private static Integer root;
-    private static List<Tree> subtrees;
+    private Integer root;
+    private List<Tree> subtrees;
 
     public Tree(Integer root, List<Tree> subtrees){
         this.root = root;
@@ -99,6 +100,32 @@ public class Tree {
             }
             return total;
         }
+    }
+
+    public boolean equals(Tree tree) {
+        if (this.isEmpty() && tree.isEmpty()) {
+            return true;
+        }
+        else if (this.isEmpty() || tree.isEmpty()) {
+            return false;
+        }
+        else {
+            if (!this.root.equals(tree.getRoot())) {
+                return false;
+            }
+            if (!this.length().equals(tree.length())) {
+                return false;
+            }
+            return this.subtrees.equals(tree.getSubtrees());
+        }
+    }
+
+    private List<Tree> getSubtrees() {
+        return this.subtrees;
+    }
+
+    private Integer getRoot() {
+        return this.root;
     }
 
 }
