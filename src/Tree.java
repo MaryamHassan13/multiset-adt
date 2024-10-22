@@ -1,6 +1,7 @@
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Random;
 
 public class Tree {
     // TODO complete this Tree class to replicate the implementation from the Tree class in adts.py
@@ -38,7 +39,7 @@ public class Tree {
         }
     }
 
-    public Integer count(Integer item){
+    public int count(Integer item){
         if (this.isEmpty()){
             return 0;
         }
@@ -120,12 +121,130 @@ public class Tree {
         }
     }
 
-    private List<Tree> getSubtrees() {
+    public List<Tree> getSubtrees() {
         return this.subtrees;
     }
 
-    private Integer getRoot() {
+    public Integer getRoot() {
         return this.root;
     }
 
+    public boolean contains(Integer item) {
+        if (this.isEmpty()) {
+            return false;
+        }
+        else if (this.root.equals(item)) {
+            return true;
+        }
+        else {
+            for (Tree subtree : this.subtrees) {
+                if (subtree.contains(item)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    public List<Integer> leaves() {
+        List<Integer> result = new ArrayList<>();
+        if (!this.isEmpty()) {
+            if (this.subtrees.size() == 0) {
+                result.add(this.root);
+            }
+            else {
+                for (Tree subtree : this.subtrees) {
+                    List<Integer> tempResult = subtree.leaves();
+                    result.addAll(tempResult);
+                }
+            }
+        }
+        return result;
+    }
+
+    public boolean deleteItem(Integer item) {
+        if (this.isEmpty()) {
+            return false;
+        }
+        else if (this.root.equals(item)) {
+            this.deleteRoot();
+            return true;
+        }
+        else {
+            for (Tree subtree : this.subtrees) {
+                boolean deleted = subtree.deleteItem(item);
+                if (deleted && subtree.isEmpty()) {
+                    this.subtrees.remove(subtree);
+                    return true;
+                }
+                else if (deleted) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    private void deleteRoot() {
+        if (this.subtrees.isEmpty()) {
+            this.root = null;
+        }
+        else {
+            Integer leaf = this.extractLeaf();
+            this.root = leaf;
+        }
+    }
+
+    private Integer extractLeaf() {
+        if (this.subtrees.isEmpty()) {
+            Integer oldRoot = this.root;
+            this.root = null;
+            return oldRoot;
+        }
+        else {
+            Integer leaf = this.subtrees.get(0).extractLeaf();
+            if (this.subtrees.get(0).isEmpty()) {
+                this.subtrees.remove(0);
+            }
+            return leaf;
+        }
+    }
+
+    public void insert(Integer item) {
+        if (this.isEmpty()) {
+            this.root = item;
+        }
+        else if (this.subtrees.isEmpty()) {
+            this.subtrees.add(new Tree(item, new ArrayList<>()));
+        }
+        else {
+            Random rand = new Random();
+            int r = rand.nextInt(3);
+            if ((r+1) == 3) {
+                this.subtrees.add(new Tree(item, new ArrayList<>()));
+            }
+            if ((r+1) < 3) {
+                int m = rand.nextInt(this.subtrees.size());
+                this.subtrees.get(m).insert(item);
+            }
+        }
+    }
+
+    public boolean insertChild(Integer item, Integer parent) {
+        if (this.isEmpty()) {
+            return false;
+        }
+        else if (this.root.equals(parent)) {
+            this.subtrees.add(new Tree(item, new ArrayList<>()));
+            return true;
+        }
+        else {
+            for (Tree subtree : this.subtrees) {
+                if (subtree.insertChild(item, parent)) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
 }
